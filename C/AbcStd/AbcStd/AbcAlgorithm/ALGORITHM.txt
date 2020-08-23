@@ -1,0 +1,87 @@
+不推荐直接使用下列函数
+推荐的使用方法:
+	abcNamespace* mynamespace = Get_ABC_NameSpace();
+	_Algorithm_Init_(mynamespace);
+	mynamespace->m_algorithm.for_each(..);
+	doingsomething...
+	Delete_ABC_NameSpace();
+
+以下是algorithm.h文件中函数的使用手册
+
+/*******************************************************
+*
+* Function name		:_Algorithm_Init_
+* Description		:abc命名空间中算法库部分初始化
+* Parameter		:
+* 		@abc_namespace		填入abc命名空间的实例指针
+* Return		:void	NULL
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:_Algorithm_ForEach_
+* Description		:遍历一个容器
+* Parameter		:
+* 		@hFirst		
+* 		@hLast		要应用函数到的范围[hFist, hLast)	
+*	    @pNext		获取当前元素下一个地址的函数指针
+*       @pF			函数指针，要应用于[hFist, hLast)中每一个元素的函数
+* Return		:void(*)(const void* a)	pF
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:_Algorithm_FindIf_
+* Description		:查找某个元素
+* Parameter		:
+* 		@hFirst		
+* 		@hLast		要检验的元素范围[hFirst, hLast)
+* 		@pNext		获取当前元素下一个地址的函数指针
+* 		@pF			若为要求的元素则返回true的函数指针
+* Return		:void*	指向指向首个满足条件的元素地址，若找不到该元素则为hLast
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:_Algorithm_RemoveIf_
+* Description		:从范围[hFirst, hLast)移除所有满足条件的元素并返回新范围结尾的尾后地址(并不真正删除元素，而仅仅是把应该删除的元素后置)
+* Parameter		:
+* 		@hFirst		
+* 		@hLast		要处理的元素范围[hFirst, hLast)
+* 		@uSize		元素所占内存大小
+* 		@pNext		获取当前元素下一个地址的函数指针
+* 		@pF			若应该移除元素则返回true的函数指针
+* Return		:void*	新范围的尾后地址
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:_Algorithm_ReplaceIf_
+* Description		:以c_pNewValue的值替换范围[hFirst, hLast)中所有满足条件的元素
+* Parameter		:
+* 		@hFirst		
+* 		@hLast		要处理的元素范围[hFirst, hLast)
+* 		@uSize		元素所占内存大小
+* 		@pNext		获取当前元素下一个地址的函数指针
+* 		@pF			若该元素需要替换则返回true的函数指针
+* 		@c_pNewValue	新的元素地址
+* Return		:void	NULL
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:_Algorithm_Swap_
+* Description		:交换给定值
+* Parameter		:
+* 		@hA		
+* 		@hB			要交换的两个元素的地址
+* 		@uSize		元素所占内存大小
+* Return		:void	NULL
+*
+*******************************************************/
+

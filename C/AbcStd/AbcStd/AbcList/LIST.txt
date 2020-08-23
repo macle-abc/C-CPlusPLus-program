@@ -1,0 +1,250 @@
+list容器模板使用说明
+list_c.h为模板生成文件
+list.h为模板声明文件
+
+list相关说明:
+
+内部维护了一个this指针，所有的操作都基于this!!!
+
+使用方法
+	如何编译:
+		gcc int.c listint.c ../abc.c ../AbcAlgorithm/algorithm.c 
+1.内置类型
+eg:int类型的list
+	建议文件命名风格int_list.c	
+	Code in int_list.c
+	-----------------------------------------
+	//#define ABCSTD_LIST_DEBUG  //此行代码决定是否生成调试代码
+	#define type int
+	#include "list_c.h"
+	-----------------------------------------
+如此操作会生成int_list版本的函数实现
+
+如需使用int类型的list，则需要
+	#define type int
+	#include "list.h"
+
+2.自定义类型
+eg:struct的list
+建议文件命名风格typeName_list.c	
+	Code in typeName_list.c
+	-----------------------------------------
+	//#define ABCSTD_LIST_DEBUG  //此行代码决定是否生成调试代码
+	typedef struct structName typeName;
+	#define type typeName
+	#include "list_c.h"
+	-----------------------------------------
+如此操作会生成typeName_list版本的函数实现
+
+如需使用struct类型的list，则需要
+	typedef struct structName typeName;
+	#define type typeName
+	#include "list.h"
+
+当前目录下int.c以及listint.c为使用案例
+
+
+
+以下是list容器的使用文档
+
+
+eg:int类型的版本
+
+成员类型:					原名:				描述:
+	int_node 				struct int_node		节点类型
+	int_list 				struct int_list		int版本的list类型
+	int_value				int	                元素的类型
+	int_reference   		int * const         元素的引用
+	int_const_reference		const int * const	元素的常引用
+	int_iterator			int_node *          intlist的迭代器
+	int_const_iterator      const int_node *    intlist的常量迭代器
+	size_type               unsigned            大小
+	difference_type         int                 距离
+
+/*******************************************************
+*
+* Function name		:int_Rebind
+* Description		:重新绑定this
+* Parameter		:
+* 		@pRebindList		需要绑定的list地址
+* Return		:void	NULL
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:int_ListConstructor
+* Description		:list容器初始化构造
+* Parameter		:
+* 		@c_pFormate		决定选取哪一个版本的构造函数
+*               1."d"	默认构造版本(产生空容器)
+*  	                    int_ListConstructor("d")
+*  	            2."cv"  count个value版本
+*                       int temp = value;
+*                       int_ListConstructor("cv", count, &temp)
+*               3."c"   count个元素的容器
+*	                    int_ListConstructor("c", count)
+*               4."fl"  拷贝[c_pFirsti, c_pLast)范围内的元素
+*                       int_const_reference c_pFirsti = other->cbegin();
+*                       int_const_reference c_pLast = other->cend();
+						int_ListConstructor("fl", c_pFirst, c_pLast)
+*               5."o"   拷贝other容器中的元素
+*                       int_list* pOther
+*                       int_ListConstructor("o", pOther)
+* Return		:int_list*	所构造的list的地址
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:int_SetElemConstructor
+* Description		:设置元素的构造函数(如需使用建议在list构造之前调用)
+* Parameter		:
+* 		@pConstructor		元素的构造函数指针
+* Return		:void	NULL
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:int_SetElemConstructorCp
+* Description		:设置元素的拷贝构造函数(如需使用建议在list构造之前调用)
+* Parameter		:
+* 		@pConstructorCp		元素的拷贝构造函数指针
+* Return		:void	NULL
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:int_SetElemDestructor
+* Description		:设置元素的析构函数(如需使用建议在list构造之前调用)
+* Parameter		:
+* 		@pDestructor        元素的析构函数指针
+* Return		:void	NULL
+*
+*******************************************************/
+
+以下迭代器操作以及list操作使用->来完成
+eg:it = it->next(it);
+   it = it->prev(it);
+   type_reference data = it->data(it);
+   type_const_reference cdata = it->cdata(it);
+
+
+   ！！！！！！！！再次声明一下所有操作针对当前绑定的this进行，如需跨list操作，需要使用type_Rebind()函数，修改绑定！！！！！！
+   ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！例如第230行需要使用int_Rebind(list)重新绑定this，以下省略
+
+迭代器的操作:	参数:						返回值:
+	next 	    c_pCurrent 当前迭代器		type_iterator 下一迭代器	
+
+	prev		c_pCurrent 当前迭代器	    type_iterator 上一迭代器
+
+	data        c_pCurrent 当前迭代器	    type_reference 当前迭代器所指向的元素地址
+
+	cdata 		c_pCurrent 当前迭代器       type_const_reference 当前迭代器所指向的元素地址(const版本)
+
+
+list的操作:
+	destructor  NULL						析构list
+
+	assign      c_pFormate 所使用的重载版本	void	
+				1."cv" count个value版本										
+					int temp = value;											
+					list->assign("cv", count, &temp);
+				2."fl" [first, last)版本
+					int_list* pOther;
+					type_const_iterator c_pFirst = pOther->cbegin();
+					type_const_iterator c_pLast = pOther->cend();
+					list->assign("fl", c_pFirst, c_pLast);
+
+	front 		NULL						type_reference 容器的首元素地址
+
+	back		NULL						type_reference 容器的尾元素地址
+
+	begin		NULL			            type_iterator 返回指向容器第一个元素的迭代器
+
+	cbegin      NULL				        type_const_iterator const版本
+
+	end 		NULL 						type_iterator 返回指向容器尾端的迭代器
+
+	cend 		NULL  						type_const_iterator const版本
+
+	empty       NULL 						bool 检查容器是否为空
+
+	size        NULL 						size_type 返回容器的元素数量
+
+	clear	    NULL 						void 清空容器
+
+	insert      c_pFormate 所使用的重载版本 type_iterator 返回被插入元素的迭代器
+				1."pv" 在pos前插入value
+						int temp = 10;
+						list->insert("pv", list->cbegin(), &temp);
+				2."pcv" 在pos前插入count个value
+						int temp = 10;
+						list->insert("pcv", list->cbegin(), 10U, &temp);
+				3."pfl" 在pos前插入[first, last)范围内的元素
+						int_list* pOther;
+						type_const_iterator c_pFirst = pOther->cbegin();
+						type_const_iterator c_pLast = pOther->cend();
+						list->insert("pfl", list->cbegin(), c_pFirst, c_pLast);
+
+	emplace	    c_pPos 将构造新元素到c_pPos前 type_iterator 指向被安置的元素的迭代器(此函数调用元素的构造函数，因此必须设置元素的构造函数)
+
+ 	erase		c_pFormate 所使用的重载版本	type_iterator 最后一个被移除元素的后置迭代器
+				1."p" 指向要移除的元素的迭代器
+						list->erase("p", list->cbegin());
+				2."fl" 要移除的元素范围
+						list->erase("fl", list->cbegin(), list->cend());
+
+	push_back   c_pValue 要添加的元素地址	  void 
+
+	emplace_back NULL						  void
+
+	pop_back	 NULL						  void
+
+	push_front  c_pValue 要添加的元素地址 	  void
+
+	emplace_front NULL 						  void
+
+	pop_front    NULL						  void
+
+	resize       c_pFormate 所使用的重载版本  void
+				1."c" 容器的大小
+						list->resize("c", 20);
+				2."cv" 用value初始化容器
+						int temp = 10;
+						size_type count = 20U;
+						list->resize("cv", count, &temp)
+
+	swap	     pOther 要交换内容的容器	  void
+
+	merge 	     pOther 要交换的另一容器	  void								
+				 pCompare 若第一个参数小于等于(先序)第二个参数则返回true的函数指针
+
+	splice	     c_pFormate 所使用的重载版本  void
+				1."po" 从other转移元素到this中,元素插入到pos前
+					int_list* pOther;
+					list->splice("po", list->cbegin(), pOther);
+				2."poi" 从other转移it所指向的元素到this中,元素插入到pos前
+					int_list* pOther;
+					type_const_iterator begin = pOther->cbegin();
+					list->splice("poi", list->cbegin(), pOther, begin);
+				3."pofl" 从other转移[first, last)范围内的元素到this中,元素插入到pos前
+					int_list* pOther;
+					type_const_iterator c_pFirst = pOther->cbegin();
+					type_const_iterator c_pLast = pOther->cend();
+					list->splice("pofl", list->cbegin(), pOther, c_pFirst, c_pLast);
+
+	remove	    c_pValue 装有要删除的元素的值的地址				size_type 移除的元素个数
+				pEqual 利用该函数指针判断是否移除的元素等于*c_pValue
+
+	remove_if   pCondition若应移除该元素则返回true的函数指针 	size_type 移除的元素个数
+
+	reverse 	NULL 						  void
+
+	unique	    pEqual 判断两个元素是否相等的函数指针			size_type 移除的元素个数
+
+	sort	    pCompare 若第一个元素小于等于(先序)第二个元素则返回true的函数指针 void
+
+	for_each	pPrint 对每一个元素所采取的操作					void

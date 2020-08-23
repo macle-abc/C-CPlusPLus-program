@@ -1,0 +1,24 @@
+abc.h文件中含有abcNamespace的结构体定义
+
+为完成该命名空间的使用采用单例模式
+
+下面是abc.h中函数的使用手册
+
+/*******************************************************
+*
+* Function name		:Get_ABC_NameSpace
+* Description		:获得abc命名空间单例
+* Parameter		:
+* Return		:abcNamespace*	abc命名空间的指针
+*
+*******************************************************/
+
+/*******************************************************
+*
+* Function name		:Delete_ABC_NameSpace
+* Description		:释放abc命名空间内存
+* Parameter		:
+* Return		:void	NULL
+*
+*******************************************************/
+
